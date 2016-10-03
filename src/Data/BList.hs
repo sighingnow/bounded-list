@@ -1,5 +1,6 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE ExistentialQuantification #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 
@@ -10,18 +11,21 @@ module Data.BList (
     , (++)
     , toList
     , fromList
+    , fromList'
+    , replicate
+    , replicate'
     , head
     , tail
-    , replicate
 ) where
 
 import Prelude hiding ((++), head, tail, replicate)
+
 import Data.BList.Nat
 
 -- | Type-safe list.
 data BList n a =
-    (n ~ O) => Nil
-    | forall m. n ~ S m => (:+) a (BList m a)
+    (n ~ 'O) => Nil
+    | forall m. n ~ 'S m => (:+) a (BList m a)
 
 infixr 5 :+
 
@@ -33,15 +37,15 @@ instance (Eq a) => Eq (BList n a) where
     (==) (x:+xs) (y:+ys) = x == y && xs == ys
 
 instance Foldable (BList n) where
-    foldMap f Nil     = mempty
+    foldMap _ Nil     = mempty
     foldMap f (x:+xs) = mappend (f x) (foldMap f xs)
 
 -- | Construct an empty BList.
-empty :: BList O a
+empty :: BList 'O a
 empty = Nil
 
 -- | Construct a BList from only one element.
-singleton :: a -> BList (S O) a
+singleton :: a -> BList ('S 'O) a
 singleton x = x :+ Nil
 
 -- | Append operation.
@@ -54,21 +58,33 @@ toList :: BList n a -> [a]
 toList Nil     = []
 toList (x:+xs) = x : toList xs
 
--- | Transform ordinary list to BList.
-fromList :: [a] -> BList n a
-fromList = undefined -- foldr (\x l -> x :+ l) Nil
+-- | Transform ordinary list to BList with type of length given.
+fromList' :: SNat n -> [a] -> BList n a
+fromList' SO [] = Nil
+fromList' (SS n) (x:xs) = x :+ fromList' n xs
+fromList' _ _ = error "BList.fromList': length dismatch, impossible!"
 
--- | Type-safe head.
-head :: BList (S n) a -> a
-head (x:+_) = x
-
--- | Type-safe tail.
-tail :: BList (S n) a -> BList n a
-tail (_:+xs) = xs
+-- | Transform ordinary list to BList with type of length inferred.
+fromList :: SingI n => [a] -> BList n a
+fromList = fromList' sing
 
 -- | 'replicate' @n x@ is a BList of length @n@ with @x@ the value of
 -- every element.
-replicate :: SNat n -> a -> BList n a
-replicate SO _     = Nil
-replicate (SS n) a = a :+ replicate n a
+replicate' :: SNat n -> a -> BList n a
+replicate' SO _     = Nil
+replicate' (SS n) a = a :+ replicate' n a
 
+-- | 'replicate' @x@ for times which can be inferred from context. For example:
+--
+-- > replicate 3 :: BList ('S ('S 'O)) Int
+-- > [3,3]
+replicate :: forall n a. SingI n => a -> BList n a
+replicate = replicate' sing
+
+-- | Type-safe head.
+head :: BList ('S n) a -> a
+head (x:+_) = x
+
+-- | Type-safe tail.
+tail :: BList ('S n) a -> BList n a
+tail (_:+xs) = xs
