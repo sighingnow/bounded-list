@@ -1,0 +1,34 @@
+### Haskell ###
+
+*.o
+*.hi
+*.chi
+*.chs.h
+*.dyn_o
+*.dyn_hi
+.virtualenv
+.hpc
+.hsenv
+*.prof
+*.aux
+*.hp
+
+### Cabal ###
+
+dist
+cabal-dev
+.cabal-sandbox/
+cabal.sandbox.config
+
+### Intellij IDEA ###
+
+.idea/
+*.iml
+out/
+
+### stack ###
+
+.stack-work/
+_cache/
+_site/
+
