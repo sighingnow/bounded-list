@@ -15,5 +15,5 @@ before_install:
 install: true
 
 script:
-  - stack build --test --haddock --no-haddock-deps
+  - stack --resolver lts-7.2 build --test --haddock --no-haddock-deps
 
