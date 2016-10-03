@@ -1,0 +1,19 @@
+language: haskell
+
+cache:
+  directories:
+    - $HOME/.stack/
+    - $TRAVIS_BUILD_DIR/.stack-work/
+
+before_install:
+  - mkdir -p ~/.local/bin
+  - export PATH=~/.local/bin:$PATH
+  - travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
+  - chmod +x ~/.local/bin/stack
+  - stack setup
+
+install: true
+
+script:
+  - stack build --test --haddock --no-haddock-deps
+
