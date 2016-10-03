@@ -29,9 +29,8 @@ instance (Show a) => Show (BList n a) where
     show = show . toList
 
 instance (Eq a) => Eq (BList n a) where
-    (==) Nil Nil        = True
+    (==) Nil Nil         = True
     (==) (x:+xs) (y:+ys) = x == y && xs == ys
-    (==) _ _            = False
 
 instance Foldable (BList n) where
     foldMap f Nil     = mempty
