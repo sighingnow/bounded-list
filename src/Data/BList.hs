@@ -10,9 +10,12 @@ module Data.BList (
     , (++)
     , toList
     , fromList
+    , head
+    , tail
+    , replicate
 ) where
 
-import Prelude hiding ((++))
+import Prelude hiding ((++), head, tail, replicate)
 import Data.BList.Nat
 
 -- | Type-safe list.
@@ -56,4 +59,17 @@ toList (x:+xs) = x : toList xs
 fromList :: [a] -> BList n a
 fromList = undefined -- foldr (\x l -> x :+ l) Nil
 
+-- | Type-safe head.
+head :: BList (S n) a -> a
+head (x:+_) = x
+
+-- | Type-safe tail.
+tail :: BList (S n) a -> BList n a
+tail (_:+xs) = xs
+
+-- | 'replicate' @n x@ is a BList of length @n@ with @x@ the value of
+-- every element.
+replicate :: SNat n -> a -> BList n a
+replicate SO _     = Nil
+replicate (SS n) a = a :+ replicate n a
 
