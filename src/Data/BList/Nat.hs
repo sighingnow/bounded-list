@@ -4,7 +4,9 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 module Data.BList.Nat (
-    Nat (..)
+      Nat (..)
+    , type (.+.)
+    , type (.*.)
 ) where
 
 -- | Inductive natural number.
