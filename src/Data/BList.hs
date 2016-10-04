@@ -16,9 +16,12 @@ module Data.BList (
     , replicate'
     , head
     , tail
+    , take
+    , drop
+    , slice
 ) where
 
-import Prelude hiding ((++), head, tail, replicate)
+import Prelude hiding ((++), head, tail, replicate, take, drop)
 
 import Data.BList.Nat
 
@@ -78,7 +81,7 @@ replicate' (SS n) a = a :+ replicate' n a
 --
 -- > replicate 3 :: BList ('S ('S 'O)) Int
 -- > [3,3]
-replicate :: forall n a. SingI n => a -> BList n a
+replicate :: SingI n => a -> BList n a
 replicate = replicate' sing
 
 -- | Type-safe head.
@@ -88,3 +91,23 @@ head (x:+_) = x
 -- | Type-safe tail.
 tail :: BList ('S n) a -> BList n a
 tail (_:+xs) = xs
+
+-- | Type-safe take
+--
+-- > take (SS (SS SO)) xs.
+take :: ((m .<=. n) ~ 'True) => SNat m -> BList n a -> BList m a
+take SO _ = Nil
+take (SS n) (x :+ xs) = x :+ take n xs
+
+-- | Type-safe take.
+drop :: ((m .<=. n) ~ 'True) => SNat m -> BList n a -> BList (n .-. m) a
+drop = undefined
+
+-- | Type-safe slice.
+slice :: ((i .<=. j) ~ 'True, (j .<=. n) ~ 'True)
+    => Sing (i :: Nat)
+    -> Sing (j :: Nat)
+    -> BList n a
+    -> BList (j .-. i) a
+slice SO j vec = take j vec
+slice (SS i) (SS j) (_ :+ xs) = slice i j xs
