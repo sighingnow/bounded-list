@@ -2,15 +2,13 @@
 # For more information, see: http://docs.haskellstack.org/en/stable/yaml_configuration/
 
 # Specifies the GHC version and set of packages available (e.g., lts-3.5, nightly-2015-09-21, ghc-7.10.2)
-resolver: ghc-8.0.1
+resolver: lts-7.9
 
 # Local packages, usually specified by relative directory name
 packages:
 - '.'
 # Packages to be pulled from upstream that are not in the resolver (e.g., acme-missiles-0.3)
 extra-deps:
-- singletons-2.2
-- template-haskell-2.11.0.0
 
 # Override default flag values for local packages and extra-deps
 flags: {}
@@ -35,3 +33,9 @@ extra-package-dbs: []
 
 # Allow a newer minor version of GHC than the snapshot specifies
 # compiler-check: newer-minor
+
+build:
+  haddock: false
+  haddock-deps: false
+  library-profiling: false
+  executable-profiling: false
