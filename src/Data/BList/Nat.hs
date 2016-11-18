@@ -42,9 +42,9 @@ singletons [d|
         O   * _ = O
         S n * m = n * m + m
 
-        abs = id
+        abs n = id n
 
-        signum = id
+        signum n = id n
 
         fromInteger n | n == 0 = O
                       | n > 0 = S (fromInteger (n-1))
